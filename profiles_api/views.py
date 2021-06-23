@@ -4,6 +4,8 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework import filters
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.settings import api_settings
 
 from profiles_api import serializers, models, permissions
 
@@ -64,7 +66,7 @@ class HelloViewSet(viewsets.ViewSet):
             'Provides more functionality with less code'
         ]
 
-        return Response({'message':'Hello!', 'a_viewset':a_viewset})
+        return Response({'message':'Hello!', 'a_viewset': a_viewset})
 
     def create(self, request):
         """Create a new Hello message"""
@@ -73,7 +75,7 @@ class HelloViewSet(viewsets.ViewSet):
         if serializer.is_valid():
             name = serializer.validated_data.get('name')
             message = f'Hello {name}!'
-            return Response({'message':message})
+            return Response({'message': message})
         else:
             return Response(
                 serializer.errors,
@@ -105,3 +107,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.UpdateOwnProfile,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', 'email',)
+
+
+class UserLoginAPIView(ObtainAuthToken):
+    """Handles creating user authentication tokens"""
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
